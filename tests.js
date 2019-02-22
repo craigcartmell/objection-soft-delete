@@ -196,8 +196,8 @@ describe('Soft Delete plugin tests', () => {
             .then((result) => {
               return result.$query(knex).del();
             })
-            .then((result) => {
-              return result.$query(knex).undelete();
+            .then(() => {
+              return TestObject.query(knex).undelete();
             })
             .then(() => {
               return TestObject.query(knex)
