@@ -31,8 +31,7 @@ module.exports = (incomingOptions) => {
       // provide a way to filter to ONLY deleted records without having to remember the column name
       whereDeleted() {
         // this if is for backwards compatibility, to protect those that used a nullable `deleted` field
-        if (options.deletedValue === true)
-          return this.where(`${this.modelClass().tableName}.${options.columnName}`, options.deletedValue);
+        if (options.deletedValue === true) { return this.where(`${this.modelClass().tableName}.${options.columnName}`, options.deletedValue); }
         // qualify the column name
         return this.whereNot(`${this.modelClass().tableName}.${options.columnName}`, options.notDeletedValue);
       }

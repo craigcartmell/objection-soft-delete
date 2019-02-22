@@ -166,6 +166,50 @@ describe('Soft Delete plugin tests', () => {
           });
       });
     });
+    describe('when a deletedValue was specified', () => {
+      it('should use this value when soft deleting', () => {
+        const now = Date.now();
+        const TestObject = getModel({ columnName: 'inactive', deletedValue: now });
+
+        return TestObject.query(knex)
+          .where('id', 1)
+          .first()
+          .then((result) => {
+            return result.$query(knex).del();
+          })
+          .then(() => {
+            return TestObject.query(knex)
+              .where('id', 1)
+              .first();
+          })
+          .then((result) => {
+            expect(result.inactive).to.eql(now, 'row not marked deleted');
+          });
+      });
+      describe('when a notDeletedValue was specified', () => {
+        it('should use this value when restoring', () => {
+          const TestObject = getModel({ columnName: 'inactive', notDeletedValue: 'active' });
+
+          return TestObject.query(knex)
+            .where('id', 1)
+            .first()
+            .then((result) => {
+              return result.$query(knex).del();
+            })
+            .then((result) => {
+              return result.$query(knex).undelete();
+            })
+            .then(() => {
+              return TestObject.query(knex)
+                .where('id', 1)
+                .first();
+            })
+            .then((result) => {
+              expect(result.inactive).to.equal('active', 'row not marked deleted');
+            });
+        });
+      });
+    });
   });
 
   describe('.hardDelete()', () => {
